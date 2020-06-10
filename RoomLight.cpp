@@ -1,14 +1,15 @@
 /*##########################################*/
 //Define false if you want to turn off debug (writes to Serial Monitor)
 #ifndef DEBUG
-#define DEBUG true
+#define DEBUG false
 #endif
-
+// Change this if the lights don't respond correctly
 #define PULSE_DELAY 10
 /*##########################################*/
 
 #include "RoomLight.h"
 
+// Bank addresses as Int used to create patterns
 int lightBanks[] = {
   // Int converts to binary on shift-in
 	0, //All off
@@ -19,13 +20,14 @@ int lightBanks[] = {
 	240 //ALL ON
 };
 
-RoomLight::RoomLight(int dataPin, int clockPin, int latchPin, int clearPin, int num_connected) {
+//RoomLight::RoomLight(int dataPin, int clockPin, int latchPin, int clearPin, int num_connected) {
+RoomLight::RoomLight(int num_connected) {
 	// Main constructor
 
-	this->dataPin = dataPin;
-  this->clockPin = clockPin;
-  this->latchPin = latchPin;
-  this->clearPin = clearPin;
+	// this->dataPin = dataPin;
+  // this->clockPin = clockPin;
+  // this->latchPin = latchPin;
+  // this->clearPin = clearPin;
 
 	this->num_connected = num_connected;
 }
@@ -46,7 +48,7 @@ void RoomLight::firstRun() {
 	if(this->runOnce == true) {
 		// Clear all pins
 		writeShift(0);
-
+		// Don't run again
 	  this->runOnce = false;
 	}
 }
@@ -65,10 +67,8 @@ void RoomLight::activeBank(int bank, int status) {
 
 	bool isInArray = false;
 	int positionInArray = 0;
-
+	// Check if in array
 	for (int i = 0; i < this->lengthOfActiveArray; i++){
-		Serial.print("activeBank activeLightArray loop = ");
-		Serial.println(bank);
 		if (this->activeLightArray[i] == bank) {
 			isInArray = true;
 			positionInArray = i;
@@ -76,42 +76,31 @@ void RoomLight::activeBank(int bank, int status) {
 		}
 	}
 
-	Serial.print("isInArray = ");
-	Serial.println(isInArray);
+#if DEBUG
+	Serial.print("isInArray = "); Serial.println(isInArray);
+#endif
 
 	if(isInArray && status == LOW) {
+		// Turn of if it is and status is LOW
 		for(int i = positionInArray; i < this->lengthOfActiveArray; i++){
 			this->activeLightArray[i] = this->activeLightArray[i+1];
 		}
 		this->lengthOfActiveArray--;
-
-		turnOnLightBanks();
-
 	}else if(!isInArray && status == HIGH && this->lengthOfActiveArray != 0){
-
+		// Add a light not in array and status is HIGH but active array length is > 0
 		this->lengthOfActiveArray++;
-		Serial.print("lengthOfActiveArray = ");
-		Serial.println(this->lengthOfActiveArray);
 		this->activeLightArray[this->lengthOfActiveArray-1] = bank;
-		Serial.println("Turning on NIA!");
-
-		turnOnLightBanks();
-	//} else if() {
-
 	}else if(!isInArray && status == HIGH && this->lengthOfActiveArray == 0){
+		// Add a light not in array and status is HIGH but active array length is 0
 		this->lengthOfActiveArray++;
 		this->activeLightArray[0] = bank;
-		Serial.println("Turning on! ActiveArray was 0");
-		Serial.print("ActiveArray is now ");
-		Serial.println(this->lengthOfActiveArray);
-
-		turnOnLightBanks();
 	}
-
+	// Turn on the light banks
+	turnOnLightBanks();
 }
 
 void RoomLight::progressiveLightBanks() {
-
+	// Switches on one light per event
 	if(this->lengthOfActiveArray == 0){
 		activeBank(H8, HIGH);
 	}else if (this->lengthOfActiveArray == num_connected){
@@ -119,41 +108,8 @@ void RoomLight::progressiveLightBanks() {
 			activeBank(i+1, LOW);
 		}
 	}else{
-		Serial.print("Passing to activeBank = ");
-		Serial.println(this->activeLightArray[this->lengthOfActiveArray-1] +1);
 		activeBank(this->activeLightArray[this->lengthOfActiveArray-1] + 1, HIGH);
 	}
-
-		// int banksConnected[num_connected];
-		// for (int i = 0; i < num_connected; i++){
-		// 	banksConnected[i] = i+1;
-		// }
-		//
-		// for (int i = 0; i < this->lengthOfActiveArray; i++){
-		// 	bool isAlreadyActive = false;
-		//
-		// 	int a = 0;
-		// 	for (a; a < num_connected; a++) {
-		// 		if(this->activeLightArray[i] == banksConnected[a]){
-		// 			Serial.print("Current Active Item = ");
-		// 			Serial.println(this->activeLightArray[i]);
-		// 			isAlreadyActive = true;
-		// 		}
-		// 		isAlreadyActive = false;
-		// 		Serial.print("banksConnected loop");
-		// 		Serial.println(banksConnected[a]);
-		// 	}
-		// 	if(!isAlreadyActive){
-		// 		Serial.print("activeLightArray[i]");
-		// 		Serial.println(activeLightArray[i]);
-		// 		Serial.print("banksConnected[i]");
-		// 		Serial.println(banksConnected[i]);
-		// 		activeBank(banksConnected[a], HIGH);
-		// 		break;
-		// 	}
-		//}
-		//turnOnLightBanks();
-		//}
 }
 
 void RoomLight::turnOnLightBanks() {
@@ -199,6 +155,7 @@ void RoomLight::connectButton(int p, int d, bool a) {
 bool RoomLight::buttonIsPressed() {
 
 	bool result = false;
+	// Only responds if active so it can be programatically deactivated
 	if (deviceButton.isActive) {
 		reading = digitalRead(deviceButton.pin_connected);
 
@@ -250,19 +207,3 @@ void RoomLight::pulsePin() {
     delayMicroseconds(PULSE_DELAY);
     digitalWrite(latchPin, LOW);
 }
-
-
-// for(int a = 0; a < length; a++) {
-// 	this->previousLightingArray[a] = pins[a];
-// 	Serial.print("PLA: ");
-// 	Serial.print("a : ");
-// 	Serial.print(pins[a]);
-// 	if(a == length-1){
-// 		for(int b = a; b < previousLightingArrayLength; b++){
-// 			this->previousLightingArray[b] = 0;
-// 			Serial.print("PLA: ");
-// 			Serial.print("b : ");
-// 			Serial.print(pins[b]);
-// 		}
-// 	}
-// }

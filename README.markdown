@@ -33,7 +33,7 @@ int buttonPin = 13;
 #### Initialisation
 Constructor: Call this before the void setup() and loop() functions in Arduino, but after config variables above.
 ```c
-RoomLight(int dataPin, int clockPin, int latchPin, int clearPin, int num_connected);
+RoomLight(int num_connected);
 ```
 
 Setup function
@@ -95,12 +95,12 @@ bool buttonIsPressed();
 ```
 
 Instantiate button and set parameters
-pin = availble output pin
+pin = availble output pin - default: 0
 debounce = delay to ensure button is actually pressed (default = 100ms)
 isActive = set to default as true (on) but can be turned off and on depending on user prefs (default = true)
 variables are public so are mutable eg: my_button.pin = 1;
 ```c
-void connectButton();
+void connectButton(int pin=0, int debounce=100, bool isActive=true);
 ```
 
 #### Utility functions

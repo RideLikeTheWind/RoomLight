@@ -9,12 +9,6 @@ const int H5 = 3;
 const int H4 = 4;
 const int ALL = 5;
 
-// Add constants for the IC Pins
-const int dataPin = 7;
-const int clockPin = 6;
-const int latchPin = 5;
-const int pinStatus = 8;
-
 #if (ARDUINO >= 100)
  #include "Arduino.h"
 #else
@@ -31,9 +25,6 @@ class AddButton {
     int pin_connected;
 		int debounce;
 		bool isActive;
-
-	private:
-
 };
 
 class RoomLight
@@ -41,7 +32,8 @@ class RoomLight
   public:
 
 	  // Constructor
-	  RoomLight(int dataPin,int clockPin, int latchPin, int clearPin, int num_connected=8);
+	  //RoomLight(int dataPin,int clockPin, int latchPin, int clearPin, int num_connected=4);
+    RoomLight(int num_connected=4);
 
 	  // Setup pins
 	  void TPICBegin();
@@ -116,10 +108,11 @@ class RoomLight
 
 	private:
 		// General
-		int dataPin;
-		int clockPin;
-		int latchPin;
-		int clearPin;
+    // Add constants for the IC Pins
+    int dataPin = 7;
+    int clockPin = 6;
+    int latchPin = 5;
+    int clearPin = 8;
 
     // State comparative array
     int previousLightingArray[6];
