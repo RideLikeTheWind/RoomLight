@@ -15,8 +15,7 @@ const int ALL = 5;
  #include "WProgram.h"
 #endif
 
-//class AddButton;
-
+//class AddButton header;
 class AddButton {
 	public:
 		//Constructor
@@ -27,8 +26,39 @@ class AddButton {
 		bool isActive;
 };
 
-class RoomLight
-{
+// class Simple Sensor header
+
+// Sensor default types
+const int Temperature = 1;
+const int Light = 2;
+const int Sound = 3;
+// Sensor return types
+const int Celsius = 1;
+const int Fahrenheit = 2;
+const int Brightness = 3;
+
+class SimpleSensor {
+  public:
+    SimpleSensor(int pin=0, int type=Temperature, bool isActive=true, long int debounce=1000);
+
+    //Functions
+    // Returns the value of the sensor given the debounce
+    // time provided in the initial setup
+    // Pass in return type as Celsius, Fahrenheit or Light
+    float readSensor(int returnType=0);
+
+    int pin_connected;
+    bool isActive;
+    int debounce;
+    int type;
+
+  private:
+    float readTemp(int returnType=Celsius, int p=0);
+    float readLight(int p=0);
+};
+
+// RoomLight class
+class RoomLight {
   public:
 
 	  // Constructor

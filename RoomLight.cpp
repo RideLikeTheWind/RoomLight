@@ -24,11 +24,6 @@ int lightBanks[] = {
 RoomLight::RoomLight(int num_connected) {
 	// Main constructor
 
-	// this->dataPin = dataPin;
-  // this->clockPin = clockPin;
-  // this->latchPin = latchPin;
-  // this->clearPin = clearPin;
-
 	this->num_connected = num_connected;
 }
 
@@ -124,10 +119,11 @@ void RoomLight::turnOnLightBanks() {
 
 void RoomLight::ledsFlash(int repeats, int speed) {
 	// Flash the pins
+	// Dirty hack to work out a cycle for on and off
 	for (int i = 0; i < repeats; i++){
-		activeBank(ALL, HIGH);
+		writeShift(lightBanks[OFF]);
 		delay(speed);
-		activeBank(ALL, LOW);
+		writeShift(lightBanks[ALL]);
 		delay(speed);
 	}
 }
@@ -141,7 +137,6 @@ void RoomLight::ledsDance(int repeats, int speed) {
 			writeShift(lightBanks[randomNum]);
 			delay(speed);
     }
-
   }
 }
 

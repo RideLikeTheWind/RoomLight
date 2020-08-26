@@ -103,6 +103,47 @@ variables are public so are mutable eg: my_button.pin = 1;
 void connectButton(int pin=0, int debounce=100, bool isActive=true);
 ```
 
+Check to see if the button is active or set active status
+```c
+isActive = true || false;
+```
+
+#### Sensor Functions
+
+Constructor function to setup the Sensor
+Instantiate with:
+* int pin = 1-13 || A0-A6 (default is 0; must be set)
+* int type = Temperature || Light (default is Temperature)
+* bool isActive = true || false (default is true)
+* int debounce = 1000 (default is 1000 or one second)
+```c
+SimpleSensor my_sensor(int pin, int type=Temperature, bool isActive=true, long int debounce=1000);
+```
+
+Returns the value of the sensor after a given time (set as debounce)
+provided in the initial setup.
+* If isActive is set as false, calling readSensor will return false
+* Returns calculated result.
+* Light returned as a value between 0 and 100
+Arguments: return type as Celsius || Fahrenheit || Light
+```c
+float readSensor(int returnType=0);
+/// example
+if(my_sensor.readSensor(Celsius) > 10.0) {
+  // do something
+}
+```
+
+Exposed variables:
+pin; type; isActive; debounce;
+Can be set on the fly
+```c
+my_sensor.pin = 1;
+my_sensor.type = Temperature;
+my_sensor.isActive = false;
+my_sensor.debounce = 0-10000; //(in ms)
+```
+
 #### Utility functions
 
 Main write function
