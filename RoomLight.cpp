@@ -154,7 +154,7 @@ bool RoomLight::buttonIsPressed() {
 	if (deviceButton.isActive) {
 		reading = digitalRead(deviceButton.pin_connected);
 
-		while(reading == HIGH && isReset == true) {
+		while(reading == LOW && isReset == true) {
 
 	#if DEBUG
 		// Serial.println(previousMillis);
@@ -168,7 +168,7 @@ bool RoomLight::buttonIsPressed() {
 			reading = digitalRead(deviceButton.pin_connected);
 		}
 
-		if(reading != HIGH) {
+		if(reading != LOW) {
 			previousMillis = millis();
 			isReset = true;
 		}else{
